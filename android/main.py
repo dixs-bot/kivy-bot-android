@@ -54,8 +54,7 @@ C = {
     'success_bg':   (0.051, 0.165, 0.122, 1),
 }
 
-Window.clearcolor = C['bg']
-Window.softinput_mode = 'pan'
+
 
 # ============================================================
 # DATA STORE (shared antar screen)
@@ -108,6 +107,8 @@ class ToastManager:
 
     @mainthread
     def show(self, message, toast_type="info"):
+        from kivy.graphics import Color, RoundedRectangle, Line
+        
         colors = {
             'success': (C['accent'], C['success_bg']),
             'error':   (C['error'], C['error_dim']),
@@ -128,28 +129,22 @@ class ToastManager:
             padding=(dp(16), dp(12)),
             spacing= dp(10),
         )
-        toast.canvas.before.add(
-            Builder.load_string(f'''
-<BoxLayout>:
-    canvas.before:
-        Color:
-            rgba: {bg_color}
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [12]
-        Color:
-            rgba: {text_color}
-            a: 0.3
-        Line:
-            width: 1
-            rounded_rectangle: [self.x, self.y, self.width, self.height, 12]
-''')[0].canvas.before.children[1]
-        )
+        
+        with toast.canvas.before:
+            Color(rgba=bg_color)
+            RoundedRectangle(pos=toast.pos, size=toast.size, radius=[12])
 
-        icon_map = {'success': '✓', 'error': '✗', 'warning': '⚠', 'info': 'ℹ'}
+        def update_rect(instance, value):
+            instance.canvas.before.clear()
+            with instance.canvas.before:
+                Color(rgba=bg_color)
+                RoundedRectangle(pos=instance.pos, size=instance.size, radius=[12])
+        
+        toast.bind(pos=update_rect, size=update_rect)
+
+        icon_map = {'success': 'OK', 'error': 'X', 'warning': '!', 'info': 'i'}
         lbl_icon = Label(
-            text=icon_map.get(toast_type, 'ℹ'),
+            text=icon_map.get(toast_type, 'i'),
             font_size= sp(18),
             color= text_color,
             size_hint_x= None,
@@ -2470,6 +2465,10 @@ class HistoryScreen(Screen):
 # ============================================================
 class MPAPSApp(App):
     def build(self):
+        # DIPINDAHKAN KE SINI agar tidak force close di Android
+        Window.clearcolor = C['bg']
+        Window.softinput_mode = 'pan'
+
         Builder.load_string(KV)
 
         self.sm = ScreenManager(transition=FadeTransition(duration=0.2))
