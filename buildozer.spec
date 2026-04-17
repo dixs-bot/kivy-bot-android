@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 [app]
 
 # (str) Title of your application
@@ -16,19 +15,14 @@ source.dir = android
 # (list) Source files to include (let empty to include all the files)
 source.include_exts = py,png,jpg,kv,atlas,ttf
 
-# (list) List of inclusions using pattern matching
-#source.include_patterns = assets/*,images/*.png
-
-# (list) Source files to exclude (let empty to not exclude anything)
-#source.exclude_exts = spec
-
 # (str) Application versioning (method 1)
 version = 1.0.0
 
-# (list) Application requirements (space separated, e.g. requirements = kivy==2.1.0)
-requirements = python3==3.10.13,kivy==2.3.0,websocket-client
+# (list) Application requirements
+# Dihilangkan ==3.10.13 agar buildozer mencari versi yang cocok
+requirements = python3,kivy==2.3.0,websocket-client
 
-# (str) Supported orientation (landscape, sensorLandscape, portrait or all)
+# (str) Supported orientation
 orientation = portrait
 
 # (bool) Indicate if the application should be fullscreen or not
@@ -43,35 +37,20 @@ android.api = 33
 # (int) Minimum Android API level
 android.minapi = 24
 
-# (int) Android NDK version to use
-android.ndk = 25b
-
-# (bool) Use --private data storage (True) or public (False)
-#android.private_storage = True
-
-# (str) Android NDK directory (if empty, it will be automatically downloaded)
-#android.ndk_path =
-
-# (str) Android SDK directory (if empty, it will be automatically downloaded)
-#android.sdk_path =
-
 # (bool) Accept Android SDK license
 android.accept_sdk_license = True
 
-# (str) Android architecture to build for (armeabi-v7a, arm64-v8a, x86, x86_64)
+# (str) Android architecture
 android.arch = arm64-v8a
 
-# (str) p4a branch to use (master, develop, etc)
+# (str) Bootstrap name to use (WAJIB SDL2)
+android.bootstrap = sdl2
+
+# (str) p4a branch to use
 p4a.branch = master
 
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with commands), 3 = trace)
+# (int) Log level
 log_level = 2
-
-# (str) Bootstrap name to use (android only)
-#android.bootstrap = sdl2
-
-# (int) Number of threads to use when building (make -jN)
-#android.num_threads = 1
 
 # (bool) Warn if buildozer.spec is older than the one in buildozer
 warn_on_root = 1
@@ -79,106 +58,11 @@ warn_on_root = 1
 
 [buildozer]
 
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with commands), 3 = trace)
+# (int) Log level
 log_level = 2
 
 # (int) Warn if buildozer.spec is older than the one in buildozer
 warn_on_root = 1
 
-# (str) Path to build artifact storage
-#build_dir = ./.buildozer
-
 # (str) Path to build output (i.e. .apk, .aab) storage
-=======
-[app]
-
-# (str) Title of your application
-title = MPAPS Controller
-
-# (str) Package name
-package.name = mpaps
-
-# (str) Package domain (needed for android/ios packaging)
-package.domain = org.mpaps
-
-# (str) Source code directory (relative to this file)
-source.dir = android
-
-# (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,ttf
-
-# (list) List of inclusions using pattern matching
-#source.include_patterns = assets/*,images/*.png
-
-# (list) Source files to exclude (let empty to not exclude anything)
-#source.exclude_exts = spec
-
-# (str) Application versioning (method 1)
-version = 1.0.0
-
-# (list) Application requirements (space separated, e.g. requirements = kivy==2.1.0)
-requirements = python3==3.10.13,kivy==2.3.0,websocket-client
-
-# (str) Supported orientation (landscape, sensorLandscape, portrait or all)
-orientation = portrait
-
-# (bool) Indicate if the application should be fullscreen or not
-fullscreen = 0
-
-# (list) Permissions
-android.permissions = INTERNET,READ_EXTERNAL_STORAGE
-
-# (int) Target Android API level
-android.api = 33
-
-# (int) Minimum Android API level
-android.minapi = 24
-
-# (int) Android NDK version to use
-android.ndk = 25b
-
-# (bool) Use --private data storage (True) or public (False)
-#android.private_storage = True
-
-# (str) Android NDK directory (if empty, it will be automatically downloaded)
-#android.ndk_path =
-
-# (str) Android SDK directory (if empty, it will be automatically downloaded)
-#android.sdk_path =
-
-# (bool) Accept Android SDK license
-android.accept_sdk_license = True
-
-# (str) Android architecture to build for (armeabi-v7a, arm64-v8a, x86, x86_64)
-android.arch = arm64-v8a
-
-# (str) p4a branch to use (master, develop, etc)
-p4a.branch = master
-
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with commands), 3 = trace)
-log_level = 2
-
-# (str) Bootstrap name to use (android only)
-#android.bootstrap = sdl2
-
-# (int) Number of threads to use when building (make -jN)
-#android.num_threads = 1
-
-# (bool) Warn if buildozer.spec is older than the one in buildozer
-warn_on_root = 1
-
-
-[buildozer]
-
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with commands), 3 = trace)
-log_level = 2
-
-# (int) Warn if buildozer.spec is older than the one in buildozer
-warn_on_root = 1
-
-# (str) Path to build artifact storage
-#build_dir = ./.buildozer
-
-# (str) Path to build output (i.e. .apk, .aab) storage
->>>>>>> 0051939bdfc4db26b4371397e7b9cfc434853ab3
 #bin_dir = ./bin
