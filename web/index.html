@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -1417,4 +1418,1425 @@
     });
     </script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPAPS — Multi Platform Auto Posting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    colors: {
+                        base: { 900: '#060b18', 800: '#0d1425', 700: '#111a2e', 600: '#1a2744', 500: '#243356' },
+                        mint: { 400: '#33ffc2', 500: '#00e5a0', 600: '#00cc8e', 700: '#00b37d' },
+                        flame: { 400: '#ff6b6b', 500: '#ff4757', 600: '#e8384f' },
+                        amber: { 400: '#ffbe0b', 500: '#ffa502' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #060b18;
+            --bg-card: #111a2e;
+            --bg-card-hover: #162040;
+            --border: #1a2744;
+            --border-light: #243356;
+            --accent: #00e5a0;
+            --accent-dim: rgba(0, 229, 160, 0.15);
+            --error: #ff4757;
+            --warning: #ffa502;
+            --text: #e8edf5;
+            --text-muted: #6b7a99;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Background grid pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 229, 160, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 160, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Ambient glow */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 229, 160, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-layout { position: relative; z-index: 1; display: flex; height: 100vh; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: linear-gradient(180deg, #0d1425 0%, #0a1020 100%);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .sidebar-logo {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-logo h1 span {
+            background: linear-gradient(135deg, #00e5a0, #33ffc2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            user-select: none;
+        }
+
+        .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+        .nav-item.active {
+            color: var(--accent);
+            background: var(--accent-dim);
+            border-color: rgba(0, 229, 160, 0.2);
+        }
+        .nav-item i { width: 20px; text-align: center; font-size: 15px; }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .ws-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--error);
+            transition: background 0.3s;
+        }
+        .ws-dot.connected { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .topbar {
+            height: 64px;
+            min-height: 64px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            background: rgba(13, 20, 37, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .topbar-title { font-size: 16px; font-weight: 600; }
+
+        .topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-light) transparent;
+        }
+
+        .content-area::-webkit-scrollbar { width: 6px; }
+        .content-area::-webkit-scrollbar-track { background: transparent; }
+        .content-area::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+
+        /* Sections */
+        .section { display: none; }
+        .section.active { display: block; animation: fadeUp 0.3s ease; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .card:hover { border-color: var(--border-light); }
+        .card-glow { box-shadow: 0 0 30px rgba(0, 229, 160, 0.05); }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        /* Stat cards */
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+        }
+
+        /* Status indicator */
+        .status-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+            display: inline-block;
+        }
+        .status-dot.on { background: var(--accent); animation: pulse-dot 1.5s infinite; }
+        .status-dot.off { background: var(--error); opacity: 0.7; }
+
+        @keyframes pulse-dot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 229, 160, 0.5); }
+            50% { box-shadow: 0 0 0 8px rgba(0, 229, 160, 0); }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00e5a0, #00cc8e);
+            color: #060b18;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0, 229, 160, 0.3); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff4757, #e8384f);
+            color: #fff;
+        }
+        .btn-danger:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255, 71, 87, 0.3); }
+        .btn-danger:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .btn-ghost {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.08); border-color: var(--border-light); }
+
+        .btn-sm { padding: 7px 14px; font-size: 13px; border-radius: 8px; }
+
+        /* Terminal log viewer */
+        .terminal {
+            background: #080d1a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .terminal-dots { display: flex; gap: 6px; }
+        .terminal-dots span { width: 10px; height: 10px; border-radius: 50%; }
+        .terminal-dots span:nth-child(1) { background: #ff5f57; }
+        .terminal-dots span:nth-child(2) { background: #ffbd2e; }
+        .terminal-dots span:nth-child(3) { background: #28c840; }
+
+        .terminal-body {
+            padding: 14px 16px;
+            max-height: 460px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+            line-height: 1.7;
+        }
+
+        .terminal-body::-webkit-scrollbar { width: 5px; }
+        .terminal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .log-line { display: flex; gap: 8px; }
+        .log-time { color: var(--text-muted); white-space: nowrap; }
+        .log-tag {
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .log-tag.success { background: rgba(0,229,160,0.15); color: #00e5a0; }
+        .log-tag.error { background: rgba(255,71,87,0.15); color: #ff4757; }
+        .log-tag.warning { background: rgba(255,165,2,0.15); color: #ffa502; }
+        .log-tag.info { background: rgba(100,130,200,0.15); color: #8fa4d0; }
+        .log-platform {
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .log-platform.facebook { background: rgba(66,103,178,0.2); color: #5b7fd6; }
+        .log-platform.instagram { background: rgba(225,48,108,0.15); color: #e8608a; }
+        .log-platform.whatsapp { background: rgba(37,211,102,0.15); color: #25d366; }
+        .log-platform.system { background: rgba(255,255,255,0.06); color: #8892a8; }
+        .log-msg { color: var(--text); word-break: break-word; }
+
+        .log-filter-btn {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .log-filter-btn:hover { border-color: var(--border-light); color: var(--text); }
+        .log-filter-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed var(--border-light);
+            border-radius: 14px;
+            padding: 48px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+        .upload-zone.dragover .upload-icon { transform: scale(1.15); }
+        .upload-icon { font-size: 48px; color: var(--text-muted); transition: transform 0.3s; margin-bottom: 16px; }
+
+        /* Table */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
+        }
+        .data-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: var(--text);
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* Form inputs */
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .form-input:focus { border-color: var(--accent); }
+        .form-input::placeholder { color: var(--text-muted); }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        /* Toggle switch */
+        .toggle-track {
+            width: 44px; height: 24px;
+            background: var(--border-light);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .toggle-track.on { background: var(--accent); }
+        .toggle-thumb {
+            width: 18px; height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px; left: 3px;
+            transition: transform 0.2s;
+        }
+        .toggle-track.on .toggle-thumb { transform: translateX(20px); }
+
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 3.7s forwards;
+            backdrop-filter: blur(10px);
+            border: 1px solid;
+            max-width: 380px;
+        }
+        .toast.success { background: rgba(0,229,160,0.12); border-color: rgba(0,229,160,0.3); color: #00e5a0; }
+        .toast.error { background: rgba(255,71,87,0.12); border-color: rgba(255,71,87,0.3); color: #ff4757; }
+        .toast.warning { background: rgba(255,165,2,0.12); border-color: rgba(255,165,2,0.3); color: #ffa502; }
+        .toast.info { background: rgba(100,130,200,0.12); border-color: rgba(100,130,200,0.3); color: #8fa4d0; }
+
+        @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
+
+        /* Platform cards */
+        .platform-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.2s;
+        }
+        .platform-card:hover { border-color: var(--border-light); }
+        .platform-icon {
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .platform-icon.fb { background: rgba(66,103,178,0.2); color: #5b7fd6; }
+        .platform-icon.ig { background: rgba(225,48,108,0.15); color: #e8608a; }
+        .platform-icon.wa { background: rgba(37,211,102,0.15); color: #25d366; }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00e5a0, #33ffc2);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Day selector */
+        .day-btn {
+            width: 38px; height: 38px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .day-btn:hover { border-color: var(--border-light); color: var(--text); }
+        .day-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .mobile-nav {
+                display: flex !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #0d1425;
+                border-top: 1px solid var(--border);
+                padding: 8px;
+                z-index: 100;
+                justify-content: space-around;
+            }
+            .mobile-nav button {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                padding: 8px 12px;
+                border: none;
+                background: none;
+                color: var(--text-muted);
+                font-size: 10px;
+                font-family: inherit;
+                font-weight: 500;
+                cursor: pointer;
+            }
+            .mobile-nav button.active { color: var(--accent); }
+            .mobile-nav button i { font-size: 18px; }
+            .content-area { padding: 20px 16px 80px; }
+            .stat-value { font-size: 28px; }
+        }
+
+        .mobile-nav { display: none; }
+
+        /* Cursor blink for terminal */
+        .cursor-blink::after {
+            content: '▊';
+            animation: blink 1s step-end infinite;
+            color: var(--accent);
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Smooth counter animation */
+        @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .count-anim { animation: countUp 0.3s ease; }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h1><span>MPAPS</span></h1>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Auto Posting System</p>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item active" data-section="dashboard" onclick="switchSection('dashboard')">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </div>
+                <div class="nav-item" data-section="upload" onclick="switchSection('upload')">
+                    <i class="fas fa-cloud-arrow-up"></i> Upload CSV
+                </div>
+                <div class="nav-item" data-section="logs" onclick="switchSection('logs')">
+                    <i class="fas fa-terminal"></i> Log Viewer
+                </div>
+                <div class="nav-item" data-section="settings" onclick="switchSection('settings')">
+                    <i class="fas fa-sliders"></i> Pengaturan
+                </div>
+                <div class="nav-item" data-section="scheduler" onclick="switchSection('scheduler')">
+                    <i class="fas fa-clock"></i> Scheduler
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="ws-dot" id="wsDot"></div>
+                <span id="wsLabel">Terputus</span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="topbar-title" id="topbarTitle">Dashboard</div>
+                <div class="topbar-actions">
+                    <input type="text" id="serverUrl" class="form-input" style="width:260px; font-size:12px; padding:7px 12px;"
+                           placeholder="http://localhost:8000" value="http://localhost:8000">
+                    <input type="text" id="apiKeyInput" class="form-input" style="width:200px; font-size:12px; padding:7px 12px;"
+                           placeholder="API Key" value="mpaps-2024-secret-key-change-me">
+                    <button class="btn btn-ghost btn-sm" onclick="connectServer()">
+                        <i class="fas fa-plug"></i> Hubungkan
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+
+                <!-- ===== DASHBOARD ===== -->
+                <div class="section active" id="sec-dashboard">
+                    <!-- Stat Cards -->
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px;">
+                        <div class="card card-glow">
+                            <div class="card-title">Status Bot</div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span class="status-dot off" id="statusDot"></span>
+                                <span class="stat-value" id="statusText" style="font-size:22px; color:var(--error);">OFFLINE</span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Produk Diproses</div>
+                            <div class="stat-value" id="statProcessed" style="color:var(--accent);">0</div>
+                            <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">
+                                dari <span id="statTotal">0</span> produk
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Berhasil Posting</div>
+                            <div class="stat-value" id="statSuccess" style="color:#00e5a0;">0</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Gagal Posting</div>
+                            <div class="stat-value" id="statFailed" style="color:var(--error);">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Control Panel -->
+                    <div class="card" style="margin-bottom:24px;">
+                        <div class="card-title">Kontrol Bot</div>
+                        <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                            <button class="btn btn-primary" id="btnStart" onclick="startBot()">
+                                <i class="fas fa-play"></i> Mulai Bot
+                            </button>
+                            <button class="btn btn-danger" id="btnStop" onclick="stopBot()" disabled>
+                                <i class="fas fa-stop"></i> Hentikan Bot
+                            </button>
+                            <div style="margin-left:auto; font-size:13px; color:var(--text-muted);">
+                                Uptime: <span id="uptime" class="font-mono" style="color:var(--text);">00:00:00</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar" style="margin-top:16px;">
+                            <div class="progress-fill" id="progressBar"></div>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">
+                            Progress: <span id="progressText">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Platform Status -->
+                    <div class="card-title" style="margin-bottom:12px;">Platform Aktif</div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:12px;">
+                        <div class="platform-card">
+                            <div class="platform-icon fb"><i class="fab fa-facebook-f"></i></div>
+                            <div>
+                                <div style="font-size:14px; font-weight:600;">Facebook</div>
+                                <div style="font-size:12px; color:var(--text-muted);">Marketplace + Page</div>
+                            </div>
+                            <div style="margin-left:auto;">
+                                <span class="status-dot on" id="platFb"></span>
+                            </div>
+                        </div>
+                        <div class="platform-card">
+                            <div class="platform-icon ig"><i class="fab fa-instagram"></i></div>
+                            <div>
+                                <div style="font-size:14px; font-weight:600;">Instagram</div>
+                                <div style="font-size:12px; color:var(--text-muted);">Feed + Story</div>
+                            </div>
+                            <div style="margin-left:auto;">
+                                <span class="status-dot on" id="platIg"></span>
+                            </div>
+                        </div>
+                        <div class="platform-card">
+                            <div class="platform-icon wa"><i class="fab fa-whatsapp"></i></div>
+                            <div>
+                                <div style="font-size:14px; font-weight:600;">WhatsApp</div>
+                                <div style="font-size:12px; color:var(--text-muted);">Broadcast Message</div>
+                            </div>
+                            <div style="margin-left:auto;">
+                                <span class="status-dot on" id="platWa"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== UPLOAD ===== -->
+                <div class="section" id="sec-upload">
+                    <div class="upload-zone" id="uploadZone"
+                         ondragover="event.preventDefault(); this.classList.add('dragover')"
+                         ondragleave="this.classList.remove('dragover')"
+                         ondrop="handleDrop(event)"
+                         onclick="document.getElementById('fileInput').click()">
+                        <input type="file" id="fileInput" accept=".csv" style="display:none" onchange="handleFileSelect(this)">
+                        <div class="upload-icon"><i class="fas fa-cloud-arrow-up"></i></div>
+                        <div style="font-size:16px; font-weight:600; margin-bottom:6px;">Seret file CSV ke sini</div>
+                        <div style="font-size:13px; color:var(--text-muted);">atau klik untuk memilih file</div>
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:12px;">
+                            Format: nama, harga, deskripsi, gambar
+                        </div>
+                    </div>
+
+                    <div id="uploadResult" style="display:none; margin-top:20px;">
+                        <div class="card">
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                                <div class="card-title" style="margin-bottom:0;">
+                                    <i class="fas fa-file-csv" style="color:var(--accent);"></i>
+                                    <span id="uploadFileName" style="margin-left:6px;"></span>
+                                </div>
+                                <span id="uploadCount" style="font-size:13px; color:var(--accent); font-weight:600;"></span>
+                            </div>
+                            <div style="overflow-x:auto; max-height:350px; overflow-y:auto;">
+                                <table class="data-table" id="previewTable">
+                                    <thead><tr>
+                                        <th>#</th><th>Nama</th><th>Harga</th><th>Deskripsi</th><th>Gambar</th>
+                                    </tr></thead>
+                                    <tbody id="previewBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== LOGS ===== -->
+                <div class="section" id="sec-logs">
+                    <div class="terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-dots"><span></span><span></span><span></span></div>
+                            <div style="display:flex; gap:6px;">
+                                <button class="log-filter-btn active" data-filter="all" onclick="setLogFilter('all',this)">Semua</button>
+                                <button class="log-filter-btn" data-filter="success" onclick="setLogFilter('success',this)">Sukses</button>
+                                <button class="log-filter-btn" data-filter="error" onclick="setLogFilter('error',this)">Error</button>
+                                <button class="log-filter-btn" data-filter="warning" onclick="setLogFilter('warning',this)">Warning</button>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-muted); cursor:pointer;">
+                                    <input type="checkbox" id="autoScroll" checked style="accent-color:var(--accent);"> Auto-scroll
+                                </label>
+                                <button class="btn btn-ghost btn-sm" onclick="clearLogs()" style="padding:5px 10px;">
+                                    <i class="fas fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="terminal-body" id="logBody">
+                            <div style="color:var(--text-muted); text-align:center; padding:40px;">
+                                <i class="fas fa-terminal" style="font-size:24px; margin-bottom:10px; display:block;"></i>
+                                Menunggu log... Hubungkan ke server terlebih dahulu.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SETTINGS ===== -->
+                <div class="section" id="sec-settings">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:20px;">
+                        <!-- Delay Settings -->
+                        <div class="card">
+                            <div class="card-title">Delay Posting</div>
+                            <div style="margin-bottom:16px;">
+                                <label class="form-label">Delay Minimum (detik)</label>
+                                <input type="number" id="delayMin" class="form-input" value="5" min="1" max="300">
+                            </div>
+                            <div style="margin-bottom:16px;">
+                                <label class="form-label">Delay Maximum (detik)</label>
+                                <input type="number" id="delayMax" class="form-input" value="15" min="1" max="300">
+                            </div>
+                            <div>
+                                <label class="form-label">Max Retry</label>
+                                <input type="number" id="retryMax" class="form-input" value="3" min="1" max="10">
+                            </div>
+                        </div>
+
+                        <!-- Platform Toggle -->
+                        <div class="card">
+                            <div class="card-title">Platform</div>
+                            <div style="display:flex; flex-direction:column; gap:16px;">
+                                <div style="display:flex; align-items:center; justify-content:space-between;">
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <i class="fab fa-facebook-f" style="color:#5b7fd6;"></i>
+                                        <span style="font-size:14px;">Facebook</span>
+                                    </div>
+                                    <div class="toggle-track on" id="togFb" onclick="toggleSwitch(this)">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; align-items:center; justify-content:space-between;">
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <i class="fab fa-instagram" style="color:#e8608a;"></i>
+                                        <span style="font-size:14px;">Instagram</span>
+                                    </div>
+                                    <div class="toggle-track on" id="togIg" onclick="toggleSwitch(this)">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; align-items:center; justify-content:space-between;">
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <i class="fab fa-whatsapp" style="color:#25d366;"></i>
+                                        <span style="font-size:14px;">WhatsApp</span>
+                                    </div>
+                                    <div class="toggle-track on" id="togWa" onclick="toggleSwitch(this)">
+                                        <div class="toggle-thumb"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- API Keys -->
+                        <div class="card" style="grid-column: 1 / -1;">
+                            <div class="card-title">API Key Platform (Opsional)</div>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+                                <div>
+                                    <label class="form-label">Facebook API Key / Token</label>
+                                    <input type="password" id="apiKeyFb" class="form-input" placeholder="EAABsbCS1...">
+                                </div>
+                                <div>
+                                    <label class="form-label">Instagram API Key / Token</label>
+                                    <input type="password" id="apiKeyIg" class="form-input" placeholder="IGQVJX...">
+                                </div>
+                                <div>
+                                    <label class="form-label">WhatsApp API Key / Token</label>
+                                    <input type="password" id="apiKeyWa" class="form-input" placeholder="Bearer xyz...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:20px; display:flex; gap:12px;">
+                        <button class="btn btn-primary" onclick="saveSettings()">
+                            <i class="fas fa-floppy-disk"></i> Simpan Pengaturan
+                        </button>
+                        <button class="btn btn-ghost" onclick="loadSettings()">
+                            <i class="fas fa-rotate"></i> Muat Ulang
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ===== SCHEDULER ===== -->
+                <div class="section" id="sec-scheduler">
+                    <div class="card" style="max-width:500px;">
+                        <div class="card-title">Jadwal Otomatis</div>
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                            <span style="font-size:14px;">Aktifkan Scheduler</span>
+                            <div class="toggle-track" id="togSchedule" onclick="toggleSwitch(this)">
+                                <div class="toggle-thumb"></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:20px;">
+                            <label class="form-label">Waktu Eksekusi</label>
+                            <div style="display:flex; gap:10px;">
+                                <input type="number" id="schedHour" class="form-input" value="9" min="0" max="23" style="width:80px;">
+                                <span style="line-height:42px; color:var(--text-muted); font-size:20px;">:</span>
+                                <input type="number" id="schedMinute" class="form-input" value="0" min="0" max="59" style="width:80px;">
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:24px;">
+                            <label class="form-label">Hari Aktif</label>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                <button class="day-btn active" data-day="senin" onclick="toggleDay(this)">S</button>
+                                <button class="day-btn active" data-day="selasa" onclick="toggleDay(this)">S</button>
+                                <button class="day-btn active" data-day="rabu" onclick="toggleDay(this)">R</button>
+                                <button class="day-btn active" data-day="kamis" onclick="toggleDay(this)">K</button>
+                                <button class="day-btn active" data-day="jumat" onclick="toggleDay(this)">J</button>
+                                <button class="day-btn active" data-day="sabtu" onclick="toggleDay(this)">S</button>
+                                <button class="day-btn active" data-day="minggu" onclick="toggleDay(this)">M</button>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="saveSchedule()">
+                            <i class="fas fa-floppy-disk"></i> Simpan Jadwal
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="mobile-nav">
+        <button class="active" data-section="dashboard" onclick="switchSection('dashboard')">
+            <i class="fas fa-chart-line"></i> Dashboard
+        </button>
+        <button data-section="upload" onclick="switchSection('upload')">
+            <i class="fas fa-cloud-arrow-up"></i> Upload
+        </button>
+        <button data-section="logs" onclick="switchSection('logs')">
+            <i class="fas fa-terminal"></i> Logs
+        </button>
+        <button data-section="settings" onclick="switchSection('settings')">
+            <i class="fas fa-sliders"></i> Setting
+        </button>
+    </nav>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+    // ============================================================
+    // STATE
+    // ============================================================
+    let serverUrl = 'http://localhost:8000';
+    let apiKey = 'mpaps-2024-secret-key-change-me';
+    let ws = null;
+    let logFilter = 'all';
+    let allLogs = [];
+    let botStatus = { running: false, total_posted: 0, total_failed: 0, current_index: 0, total_products: 0, uptime: '00:00:00' };
+
+    // ============================================================
+    // NAVIGASI
+    // ============================================================
+    function switchSection(name) {
+        // Sembunyikan semua section
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('sec-' + name).classList.add('active');
+
+        // Update sidebar
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll(`.nav-item[data-section="${name}"]`).forEach(n => n.classList.add('active'));
+
+        // Update mobile nav
+        document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll(`.mobile-nav button[data-section="${name}"]`).forEach(b => b.classList.add('active'));
+
+        // Update topbar title
+        const titles = { dashboard: 'Dashboard', upload: 'Upload CSV', logs: 'Log Viewer', settings: 'Pengaturan', scheduler: 'Scheduler' };
+        document.getElementById('topbarTitle').textContent = titles[name] || name;
+    }
+
+    // ============================================================
+    // TOAST NOTIFICATION
+    // ============================================================
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="fas ${icons[type]}"></i> ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+
+    // ============================================================
+    // API CLIENT
+    // ============================================================
+    function getHeaders() {
+        return { 'X-API-Key': apiKey };
+    }
+
+    async function apiGet(path) {
+        try {
+            const r = await fetch(serverUrl + path, { headers: getHeaders() });
+            if (!r.ok) throw new Error(await r.text());
+            return await r.json();
+        } catch (e) {
+            console.error('API Error:', e);
+            return null;
+        }
+    }
+
+    async function apiPost(path, body) {
+        try {
+            const r = await fetch(serverUrl + path, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...getHeaders() },
+                body: JSON.stringify(body)
+            });
+            if (!r.ok) throw new Error(await r.text());
+            return await r.json();
+        } catch (e) {
+            console.error('API Error:', e);
+            return null;
+        }
+    }
+
+    async function apiDelete(path) {
+        try {
+            const r = await fetch(serverUrl + path, {
+                method: 'DELETE',
+                headers: getHeaders()
+            });
+            if (!r.ok) throw new Error(await r.text());
+            return await r.json();
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function apiUpload(file) {
+        const form = new FormData();
+        form.append('file', file);
+        try {
+            const r = await fetch(serverUrl + '/api/upload-csv', {
+                method: 'POST',
+                headers: { 'X-API-Key': apiKey },
+                body: form
+            });
+            if (!r.ok) throw new Error(await r.text());
+            return await r.json();
+        } catch (e) {
+            console.error('Upload Error:', e);
+            return null;
+        }
+    }
+
+    // ============================================================
+    // WEBSOCKET
+    // ============================================================
+    function connectWebSocket() {
+        if (ws) { ws.close(); ws = null; }
+
+        const wsUrl = serverUrl.replace('http', 'ws') + '/ws/logs';
+        try {
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                document.getElementById('wsDot').classList.add('connected');
+                document.getElementById('wsLabel').textContent = 'Terhubung';
+            };
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'log') {
+                    allLogs.push(msg.data);
+                    if (allLogs.length > 500) allLogs.shift();
+                    renderLogEntry(msg.data);
+                } else if (msg.type === 'status') {
+                    updateBotStatus(msg.data);
+                } else if (msg.type === 'logs_init') {
+                    allLogs = msg.data || [];
+                    renderAllLogs();
+                }
+            };
+
+            ws.onclose = () => {
+                document.getElementById('wsDot').classList.remove('connected');
+                document.getElementById('wsLabel').textContent = 'Terputus';
+                // Reconnect setelah 3 detik
+                setTimeout(() => {
+                    if (serverUrl) connectWebSocket();
+                }, 3000);
+            };
+
+            ws.onerror = () => { ws.close(); };
+        } catch (e) {
+            console.error('WebSocket Error:', e);
+        }
+    }
+
+    // ============================================================
+    // CONNECT SERVER
+    // ============================================================
+    async function connectServer() {
+        serverUrl = document.getElementById('serverUrl').value.replace(/\/+$/, '');
+        apiKey = document.getElementById('apiKeyInput').value;
+
+        // Health check
+        const health = await apiGet('/api/health');
+        if (health && health.status === 'ok') {
+            showToast('Berhasil terhubung ke server!', 'success');
+            connectWebSocket();
+            refreshStatus();
+            refreshProducts();
+            loadSettings();
+            loadSchedule();
+        } else {
+            showToast('Gagal terhubung ke server. Pastikan backend berjalan.', 'error');
+        }
+    }
+
+    // ============================================================
+    // BOT CONTROL
+    // ============================================================
+    async function startBot() {
+        const result = await apiPost('/api/start-bot', {});
+        if (result) {
+            showToast(result.message, result.success ? 'success' : 'warning');
+            refreshStatus();
+        } else {
+            showToast('Gagal menghubungi server.', 'error');
+        }
+    }
+
+    async function stopBot() {
+        const result = await apiPost('/api/stop-bot', {});
+        if (result) {
+            showToast(result.message, result.success ? 'success' : 'warning');
+            refreshStatus();
+        } else {
+            showToast('Gagal menghubungi server.', 'error');
+        }
+    }
+
+    async function refreshStatus() {
+        const data = await apiGet('/api/status');
+        if (data) updateBotStatus(data);
+    }
+
+    function updateBotStatus(data) {
+        botStatus = data;
+        const dot = document.getElementById('statusDot');
+        const text = document.getElementById('statusText');
+        const btnStart = document.getElementById('btnStart');
+        const btnStop = document.getElementById('btnStop');
+
+        if (data.running) {
+            dot.className = 'status-dot on';
+            text.textContent = 'RUNNING';
+            text.style.color = 'var(--accent)';
+            btnStart.disabled = true;
+            btnStop.disabled = false;
+        } else {
+            dot.className = 'status-dot off';
+            text.textContent = 'STOPPED';
+            text.style.color = 'var(--error)';
+            btnStart.disabled = false;
+            btnStop.disabled = true;
+        }
+
+        document.getElementById('statProcessed').textContent = data.current_index || 0;
+        document.getElementById('statTotal').textContent = data.total_products || 0;
+        document.getElementById('statSuccess').textContent = data.total_posted || 0;
+        document.getElementById('statFailed').textContent = data.total_failed || 0;
+        document.getElementById('uptime').textContent = data.uptime || '00:00:00';
+
+        // Progress bar
+        const total = data.total_products || 1;
+        const current = data.current_index || 0;
+        const pct = data.running ? Math.round((current / total) * 100) : (data.total_posted > 0 ? 100 : 0);
+        document.getElementById('progressBar').style.width = pct + '%';
+        document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    // ============================================================
+    // UPLOAD CSV
+    // ============================================================
+    function handleDrop(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) processUpload(file);
+    }
+
+    function handleFileSelect(input) {
+        const file = input.files[0];
+        if (file) processUpload(file);
+        input.value = '';
+    }
+
+    async function processUpload(file) {
+        if (!file.name.endsWith('.csv')) {
+            showToast('Hanya file CSV yang diperbolehkan.', 'error');
+            return;
+        }
+
+        // Preview lokal
+        const text = await file.text();
+        const lines = text.trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.trim());
+        const rows = lines.slice(1).filter(l => l.trim()).map(l => {
+            // Parsing CSV sederhana (handle quoted fields)
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (const ch of l) {
+                if (ch === '"') { inQuotes = !inQuotes; }
+                else if (ch === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+                else { current += ch; }
+            }
+            result.push(current.trim());
+            return result;
+        });
+
+        renderPreview(headers, rows);
+
+        // Upload ke server
+        const result = await apiUpload(file);
+        if (result && result.success) {
+            showToast(result.message, 'success');
+            refreshStatus();
+        } else {
+            showToast(result ? result.detail || 'Upload gagal' : 'Gagal menghubungi server.', 'error');
+        }
+    }
+
+    function renderPreview(headers, rows) {
+        document.getElementById('uploadResult').style.display = 'block';
+        document.getElementById('uploadFileName').textContent = headers.join(', ');
+        document.getElementById('uploadCount').textContent = rows.length + ' produk';
+
+        const body = document.getElementById('previewBody');
+        body.innerHTML = '';
+        rows.forEach((row, i) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td style="color:var(--text-muted);">${i + 1}</td>` +
+                row.slice(0, 4).map(cell => `<td title="${cell}">${cell}</td>`).join('');
+            body.appendChild(tr);
+        });
+    }
+
+    async function refreshProducts() {
+        const data = await apiGet('/api/products');
+        if (data && data.products && data.products.length > 0) {
+            // Jika sudah ada produk, render preview
+            const headers = ['nama', 'harga', 'deskripsi', 'gambar'];
+            const rows = data.products.map(p => [p.nama, p.harga, p.deskripsi, p.gambar]);
+            renderPreview(headers, rows);
+        }
+    }
+
+    // ============================================================
+    // LOG VIEWER
+    // ============================================================
+    function renderAllLogs() {
+        const body = document.getElementById('logBody');
+        body.innerHTML = '';
+        const filtered = logFilter === 'all' ? allLogs : allLogs.filter(l => l.level === logFilter);
+        if (filtered.length === 0) {
+            body.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:40px;">
+                <i class="fas fa-terminal" style="font-size:24px; margin-bottom:10px; display:block;"></i>
+                Tidak ada log.</div>`;
+            return;
+        }
+        filtered.forEach(entry => appendLogLine(body, entry));
+        if (document.getElementById('autoScroll').checked) {
+            body.scrollTop = body.scrollHeight;
+        }
+    }
+
+    function renderLogEntry(entry) {
+        if (logFilter !== 'all' && entry.level !== logFilter) return;
+        const body = document.getElementById('logBody');
+        // Hapus placeholder jika ada
+        if (allLogs.length === 1) body.innerHTML = '';
+        appendLogLine(body, entry);
+        if (document.getElementById('autoScroll').checked) {
+            body.scrollTop = body.scrollHeight;
+        }
+    }
+
+    function appendLogLine(container, entry) {
+        const div = document.createElement('div');
+        div.className = 'log-line';
+        div.innerHTML =
+            `<span class="log-time">${entry.timestamp}</span>` +
+            `<span class="log-tag ${entry.level}">${entry.level}</span>` +
+            `<span class="log-platform ${entry.platform}">${entry.platform}</span>` +
+            `<span class="log-msg">${escapeHtml(entry.message)}</span>`;
+        container.appendChild(div);
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function setLogFilter(filter, btn) {
+        logFilter = filter;
+        document.querySelectorAll('.log-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderAllLogs();
+    }
+
+    async function clearLogs() {
+        await apiDelete('/api/logs');
+        allLogs = [];
+        renderAllLogs();
+        showToast('Log berhasil dihapus.', 'success');
+    }
+
+    // ============================================================
+    // SETTINGS
+    // ============================================================
+    async function loadSettings() {
+        const data = await apiGet('/api/settings');
+        if (!data) return;
+        document.getElementById('delayMin').value = data.delay_min;
+        document.getElementById('delayMax').value = data.delay_max;
+        document.getElementById('retryMax').value = data.retry_max;
+        document.getElementById('apiKeyFb').value = data.api_key_fb || '';
+        document.getElementById('apiKeyIg').value = data.api_key_ig || '';
+        document.getElementById('apiKeyWa').value = data.api_key_wa || '';
+
+        setToggle('togFb', data.platform_facebook);
+        setToggle('togIg', data.platform_instagram);
+        setToggle('togWa', data.platform_whatsapp);
+
+        // Update platform dots
+        updatePlatformDots(data);
+    }
+
+    async function saveSettings() {
+        const payload = {
+            delay_min: parseInt(document.getElementById('delayMin').value) || 5,
+            delay_max: parseInt(document.getElementById('delayMax').value) || 15,
+            retry_max: parseInt(document.getElementById('retryMax').value) || 3,
+            platform_facebook: isToggleOn('togFb'),
+            platform_instagram: isToggleOn('togIg'),
+            platform_whatsapp: isToggleOn('togWa'),
+            api_key_fb: document.getElementById('apiKeyFb').value,
+            api_key_ig: document.getElementById('apiKeyIg').value,
+            api_key_wa: document.getElementById('apiKeyWa').value
+        };
+        const result = await apiPost('/api/settings', payload);
+        if (result && result.success) {
+            showToast('Pengaturan berhasil disimpan.', 'success');
+            updatePlatformDots(payload);
+        } else {
+            showToast('Gagal menyimpan pengaturan.', 'error');
+        }
+    }
+
+    function updatePlatformDots(data) {
+        document.getElementById('platFb').className = 'status-dot ' + (data.platform_facebook ? 'on' : 'off');
+        document.getElementById('platIg').className = 'status-dot ' + (data.platform_instagram ? 'on' : 'off');
+        document.getElementById('platWa').className = 'status-dot ' + (data.platform_whatsapp ? 'on' : 'off');
+    }
+
+    // ============================================================
+    // SCHEDULER
+    // ============================================================
+    async function loadSchedule() {
+        const data = await apiGet('/api/schedule');
+        if (!data) return;
+        setToggle('togSchedule', data.enabled);
+        document.getElementById('schedHour').value = data.hour;
+        document.getElementById('schedMinute').value = data.minute;
+
+        // Set hari aktif
+        document.querySelectorAll('.day-btn').forEach(btn => {
+            const day = btn.dataset.day;
+            if (data.days && data.days.includes(day)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    async function saveSchedule() {
+        const days = [];
+        document.querySelectorAll('.day-btn.active').forEach(btn => days.push(btn.dataset.day));
+
+        const payload = {
+            enabled: isToggleOn('togSchedule'),
+            hour: parseInt(document.getElementById('schedHour').value) || 9,
+            minute: parseInt(document.getElementById('schedMinute').value) || 0,
+            days: days
+        };
+        const result = await apiPost('/api/schedule', payload);
+        if (result && result.success) {
+            showToast('Jadwal berhasil disimpan.', 'success');
+        } else {
+            showToast('Gagal menyimpan jadwal.', 'error');
+        }
+    }
+
+    // ============================================================
+    // UI HELPERS
+    // ============================================================
+    function toggleSwitch(el) {
+        el.classList.toggle('on');
+    }
+
+    function isToggleOn(id) {
+        return document.getElementById(id).classList.contains('on');
+    }
+
+    function setToggle(id, value) {
+        const el = document.getElementById(id);
+        if (value) { el.classList.add('on'); }
+        else { el.classList.remove('on'); }
+    }
+
+    function toggleDay(btn) {
+        btn.classList.toggle('active');
+    }
+
+    // ============================================================
+    // AUTO-CONNECT & INIT
+    // ============================================================
+    window.addEventListener('load', () => {
+        // Coba auto-connect ke localhost
+        setTimeout(() => connectServer(), 500);
+    });
+    </script>
+</body>
+>>>>>>> 0051939bdfc4db26b4371397e7b9cfc434853ab3
 </html>
