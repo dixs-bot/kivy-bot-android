@@ -34,7 +34,7 @@ android.permissions = INTERNET,READ_EXTERNAL_STORAGE
 android.api = 33
 
 # (int) Minimum Android API level
-android.minapi = 24
+android.minapi = 21
 
 # (bool) Accept Android SDK license
 android.accept_sdk_license = True
