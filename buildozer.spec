@@ -1,38 +1,67 @@
-name: Build Android APK
+[app]
 
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+# (str) Title of your application
+title = MPAPS Controller
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# (str) Package name
+package.name = mpaps
 
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
+# (str) Package domain (needed for android/ios packaging)
+package.domain = org.mpaps
 
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev libltdl-dev
+# (str) Source code directory (relative to this file)
+source.dir = android
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+# (list) Source files to include (let empty to include all the files)
+source.include_exts = py,png,jpg,kv,atlas
 
-      - name: Install Buildozer
-        run: |
-          pip install --upgrade pip setuptools wheel
-          pip install buildozer cython==3.0.10
+# (str) Application versioning (method 1)
+version = 1.0.0
 
-      - name: Build APK
-        run: buildozer android debug
+# (list) Application requirements (space separated, e.g. requirements = kivy==2.1.0)
+requirements = python3,kivy==2.3.0,websocket-client
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: mpaps-apk
-          path: bin/*.apk
+# (str) Supported orientation (landscape, sensorLandscape, portrait or all)
+orientation = portrait
+
+# (bool) Indicate if the application should be fullscreen or not
+fullscreen = 0
+
+# (list) Permissions
+android.permissions = INTERNET,READ_EXTERNAL_STORAGE
+
+# (int) Target Android API level
+android.api = 33
+
+# (int) Minimum Android API level
+android.minapi = 24
+
+# (bool) Accept Android SDK license
+android.accept_sdk_license = True
+
+# (str) Android architecture to build for (armeabi-v7a, arm64-v8a, x86, x86_64)
+android.arch = arm64-v8a
+
+# (str) Bootstrap name to use (android only)
+android.bootstrap = sdl2
+
+# (str) p4a branch to use (master, develop, etc)
+p4a.branch = master
+
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with commands), 3 = trace)
+log_level = 2
+
+# (bool) Warn if buildozer.spec is older than the one in buildozer
+warn_on_root = 1
+
+
+[buildozer]
+
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with commands), 3 = trace)
+log_level = 2
+
+# (int) Warn if buildozer.spec is older than the one in buildozer
+warn_on_root = 1
+
+# (str) Path to build output (i.e. .apk, .aab) storage
+#bin_dir = ./bin
