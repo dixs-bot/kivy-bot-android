@@ -153,97 +153,227 @@ class WSClient:
             time.sleep(3)
 ws_client = WSClient()
 
+# ============================================================
+# KV LAYOUT (SUPER STERIL - TANPA POS MANUAL YANG CRASH)
+# ============================================================
 KV = '''
 <NavButton@ButtonBehavior+BoxLayout>:
-    orientation: 'vertical'; size_hint_y: None; height: '56dp'; padding: ('4dp', '6dp'); spacing: '3dp'
+    orientation: 'vertical'
+    size_hint_y: None
+    height: '56dp'
+    padding: ('4dp', '6dp')
+    spacing: '3dp'
     canvas.before:
-        Color: rgba: (0,0,0,0); Rectangle: pos: self.pos; size: self.size
-    Label: text: root.icon; font_name: 'Roboto'; font_size: '20sp'; color: root.text_color; halign: 'center'
-    Label: text: root.label; font_size: '10sp'; color: root.text_color; halign: 'center'
+        Color: rgba: (0,0,0,0)
+        Rectangle: pos: self.pos; size: self.size
+    Label:
+        text: root.icon
+        font_name: 'Roboto'
+        font_size: '20sp'
+        color: root.text_color
+        halign: 'center'
+    Label:
+        text: root.label
+        font_size: '10sp'
+        color: root.text_color
+        halign: 'center'
     text_color: C['muted']
+
 <PrimaryButton@Button>:
-    background_color: C['accent']; color: (0.02, 0.04, 0.09, 1); font_size: '14sp'; bold: True; size_hint_y: None; height: '50dp'
+    background_color: C['accent']
+    color: (0.02, 0.04, 0.09, 1)
+    font_size: '14sp'
+    bold: True
+    size_hint_y: None
+    height: '50dp'
     canvas.before:
-        Color: rgba: self.background_color; RoundedRectangle: pos: self.pos; size: self.size; radius: [12]
+        Color: rgba: self.background_color
+        RoundedRectangle: pos: self.pos; size: self.size; radius: [12]
+
 <DangerButton@Button>:
-    background_color: C['error']; color: C['white']; font_size: '14sp'; bold: True; size_hint_y: None; height: '50dp'
+    background_color: C['error']
+    color: C['white']
+    font_size: '14sp'
+    bold: True
+    size_hint_y: None
+    height: '50dp'
     canvas.before:
-        Color: rgba: self.background_color; RoundedRectangle: pos: self.pos; size: self.size; radius: [12]
+        Color: rgba: self.background_color
+        RoundedRectangle: pos: self.pos; size: self.size; radius: [12]
+
 <GhostButton@Button>:
-    background_color: (0,0,0,0); color: C['text']; font_size: '13sp'; size_hint_y: None; height: '42dp'
+    background_color: (0,0,0,0)
+    color: C['text']
+    font_size: '13sp'
+    size_hint_y: None
+    height: '42dp'
     canvas.before:
-        Color: rgba: C['border']; RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+        Color: rgba: C['border']
+        RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+
 <CardBox@BoxLayout>:
-    orientation: 'vertical'; size_hint_y: None; height: self.minimum_height; padding: '16dp'; spacing: '10dp'
+    orientation: 'vertical'
+    size_hint_y: None
+    height: self.minimum_height
+    padding: '16dp'
+    spacing: '10dp'
     canvas.before:
-        Color: rgba: C['bg_card']; RoundedRectangle: pos: self.pos; size: self.size; radius: [12]
-<SectionTitle@Label>: color: C['muted']; font_size: '11sp'; size_hint_y: None; height: '16dp'
-<BigValue@Label>: color: C['text']; font_size: '30sp'; font_name: 'Roboto'; size_hint_y: None; height: '42dp'
-<SmallInfo@Label>: color: C['muted']; font_size: '11sp'; size_hint_y: None; height: '18dp'
+        Color: rgba: C['bg_card']
+        RoundedRectangle: pos: self.pos; size: self.size; radius: [12]
+
+<SectionTitle@Label>:
+    color: C['muted']
+    font_size: '11sp'
+    size_hint_y: None
+    height: '16dp'
+
+<BigValue@Label>:
+    color: C['text']
+    font_size: '30sp'
+    font_name: 'Roboto'
+    size_hint_y: None
+    height: '42dp'
+
+<SmallInfo@Label>:
+    color: C['muted']
+    font_size: '11sp'
+    size_hint_y: None
+    height: '18dp'
+
 <FormInput@TextInput>:
-    foreground_color: C['text']; hint_text_color: C['muted']; font_size: '14sp'; padding: ['14dp', '12dp']; size_hint_y: None; height: '50dp'; multiline: False; background_color: C['bg_card']
+    foreground_color: C['text']
+    hint_text_color: C['muted']
+    font_size: '14sp'
+    padding: ['14dp', '12dp']
+    size_hint_y: None
+    height: '50dp'
+    multiline: False
+    background_color: C['bg_card']
     canvas.before:
-        Color: rgba: C['border']; RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+        Color: rgba: C['border']
+        RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+
+# AMAN: Menggunakan pos_hint alih-alih hitungan manual parent.pos
 <ToggleRow@BoxLayout>:
-    orientation: 'horizontal'; size_hint_y: None; height: '48dp'; padding: ('0dp', '4dp')
-    Label: text: root.text; font_size: '14sp'; color: C['text']; valign: 'middle'
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '48dp'
+    padding: ('0dp', '4dp')
+    Label:
+        text: root.text
+        font_size: '14sp'
+        color: C['text']
+        valign: 'middle'
     BoxLayout:
-        size_hint_x: None; width: '50dp'; pos_hint: {'center_y': 0.5}
+        size_hint_x: None
+        width: '50dp'
+        pos_hint: {'center_y': 0.5}
         canvas.before:
             Color: rgba: C['accent'] if root.active else C['border_l']
             RoundedRectangle: pos: self.pos; size: self.size; radius: [12]
         BoxLayout:
-            size_hint_x: None; width: '42dp'; height: '42dp'; pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint_x: None
+            width: '30dp'
+            height: '30dp'
+            pos_hint: {'center_x': 0.6 if root.active else 0.4, 'center_y': 0.5}
             canvas.before:
-                Color: rgba: C['white']; RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+                Color: rgba: C['white']
+                RoundedRectangle: pos: self.pos; size: self.size; radius: [8]
+
 <PlatformChip@BoxLayout>:
-    orientation: 'horizontal'; size_hint_y: None; height: '44dp'; padding: ('12dp', '8dp'); spacing: '12dp'
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '44dp'
+    padding: ('12dp', '8dp')
+    spacing: '12dp'
     canvas.before:
-        Color: rgba: C['bg_card']; RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+        Color: rgba: C['bg_card']
+        RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
     Label: text: root.icon; font_size: '18sp'; color: root.chip_color; size_hint_x: None; width: '28dp'
     Label: text: root.name; font_size: '13sp'; color: C['text']; valign: 'middle'
     Label: text: '\\u25CF'; font_size: '12sp'; color: C['accent'] if root.is_on else C['error']; size_hint_x: None; width: '20dp'; halign: 'right'
+
 <LogLine@BoxLayout>:
-    orientation: 'horizontal'; size_hint_y: None; height: '22dp'; padding: ('0dp', '1dp'); spacing: '6dp'
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '22dp'
+    padding: ('0dp', '1dp')
+    spacing: '6dp'
     Label: text: root.time_str; font_size: '10sp'; font_name: 'Roboto'; color: C['muted']; size_hint_x: None; width: '55dp'
     Label: text: root.level_str; font_size: '9sp'; bold: True; color: root.level_color; size_hint_x: None; width: '55dp'
     Label: text: root.platform_str; font_size: '9sp'; color: root.platform_color; size_hint_x: None; width: '70dp'
     Label: text: root.message; font_size: '10sp'; font_name: 'Roboto'; color: C['text']; halign: 'left'; valign: 'middle'; shorten_from: 'right'
+
 <ProductRow@BoxLayout>:
-    orientation: 'vertical'; size_hint_y: None; height: '72dp'; padding: ('14dp', '10dp'); spacing: '4dp'
+    orientation: 'vertical'
+    size_hint_y: None
+    height: '72dp'
+    padding: ('14dp', '10dp')
+    spacing: '4dp'
     canvas.before:
-        Color: rgba: C['bg_card']; RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+        Color: rgba: C['bg_card']
+        RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
     Label: text: root.nama; font_size: '14sp'; bold: True; color: C['text']; size_hint_y: None; height: '20dp'; shorten_from: 'right'
     Label: text: root.harga_str; font_size: '13sp'; font_name: 'Roboto'; color: C['accent']; size_hint_y: None; height: '18dp'
     Label: text: root.desc_preview; font_size: '11sp'; color: C['muted']; size_hint_y: None; height: '16dp'; shorten_from: 'right'
+
 <AccountRow@BoxLayout>:
-    orientation: 'horizontal'; size_hint_y: None; height: '52dp'; padding: ('14dp', '8dp'); spacing: '10dp'
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '52dp'
+    padding: ('14dp', '8dp')
+    spacing: '10dp'
     canvas.before:
-        Color: rgba: C['bg_card']; RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+        Color: rgba: C['bg_card']
+        RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
     Label: text: root.label; font_size: '13sp'; color: C['text']; valign: 'middle'
     Label: text: root.platform; font_size: '10sp'; color: C['muted']; valign: 'middle'
-    Label: text: 'AKTIF' if root.active else 'NONAKTIF'; font_size: '9sp'; bold: True; color: C['accent'] if root.active else C['error']; size_hint_x: None; width: '60dp'; halign: 'right'
+    Label: text: 'AKTIF' if root.active else 'OFF'; font_size: '9sp'; bold: True; color: C['accent'] if root.active else C['error']; size_hint_x: None; width: '60dp'; halign: 'right'
+
 <HistoryRow@BoxLayout>:
-    orientation: 'horizontal'; size_hint_y: None; height: '50dp'; padding: ('14dp', '6dp'); spacing: '8dp'
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '50dp'
+    padding: ('14dp', '6dp')
+    spacing: '8dp'
     canvas.before:
-        Color: rgba: C['bg_card']; RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
+        Color: rgba: C['bg_card']
+        RoundedRectangle: pos: self.pos; size: self.size; radius: [10]
     Label: text: root.time_str; font_size: '10sp'; font_name: 'Roboto'; color: C['muted']; size_hint_x: None; width: '50dp'; valign: 'middle'
     Label: text: root.product; font_size: '12sp'; color: C['text']; valign: 'middle'
     Label: text: root.result; font_size: '9sp'; bold: True; color: C['accent'] if root.success else C['error']; size_hint_x: None; width: '50dp'; halign: 'right'
+
 <BottomNav@BoxLayout>:
-    orientation: 'horizontal'; size_hint_y: None; height: '68dp'; padding: ['6dp', '4dp']; spacing: '2dp'
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '68dp'
+    padding: ['6dp', '4dp']
+    spacing: '2dp'
     canvas.before:
-        Color: rgba: (0.055, 0.078, 0.133, 1); Rectangle: pos: self.pos; size: self.size
-        Color: rgba: C['border']; Rectangle: pos: (self.pos[0], self.pos[1]); size: (self.size[0], 1)
+        Color: rgba: (0.055, 0.078, 0.133, 1)
+        Rectangle: pos: self.pos; size: self.size
+        Color: rgba: C['border']
+        Rectangle: pos: (self.pos[0], self.pos[1]); size: (self.size[0], 1)
     NavButton:
-        id: nav_dash; icon: '\\u26A1'; label: 'Dashboard'
-        on_press: app.switch_screen('dashboard'); nav_dash.text_color = C['accent']
+        id: nav_dash
+        icon: '\\u26A1'
+        label: 'Dashboard'
+        on_press: app.switch_screen('dashboard')
     NavButton:
-        id: nav_upload; icon: '\\u2B06'; label: 'Upload'; on_press: app.switch_screen('upload')
+        id: nav_upload
+        icon: '\\u2B06'
+        label: 'Upload'
+        on_press: app.switch_screen('upload')
     NavButton:
-        id: nav_logs; icon: '\\u2318'; label: 'Logs'; on_press: app.switch_screen('logs')
+        id: nav_logs
+        icon: '\\u2318'
+        label: 'Logs'
+        on_press: app.switch_screen('logs')
     NavButton:
-        id: nav_more; icon: '\\u2699'; label: 'Lainnya'; on_press: app.switch_screen('more_menu')
+        id: nav_more
+        icon: '\\u2699'
+        label: 'Lainnya'
+        on_press: app.switch_screen('more_menu')
 
 <DashboardScreen>:
     orientation: 'vertical'; padding: '16dp'; spacing: '12dp'
@@ -428,6 +558,9 @@ KV = '''
     GhostButton: text: 'Refresh'; on_press: root.refresh_history()
 '''
 
+# ============================================================
+# SCREEN IMPLEMENTATIONS
+# ============================================================
 class DashboardScreen(Screen):
     bot_running=BooleanProperty(False); connected=BooleanProperty(False); ws_label=StringProperty('Terputus')
     stat_processed=NumericProperty(0); stat_success=NumericProperty(0); stat_failed=NumericProperty(0); stat_total=NumericProperty(0); progress=NumericProperty(0); uptime=StringProperty('00:00:00')
@@ -640,6 +773,9 @@ class HistoryScreen(Screen):
                 store.history=nh; Clock.schedule_once(lambda dt: self._render(),0)
         threading.Thread(target=do, daemon=True).start()
 
+# ============================================================
+# MAIN APP CLASS
+# ============================================================
 class MPAPSApp(App):
     def build(self):
         Window.clearcolor = C['bg']
