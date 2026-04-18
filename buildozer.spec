@@ -15,6 +15,7 @@ android.accept_sdk_license = True
 android.arch = arm64-v8a
 android.bootstrap = sdl2
 p4a.branch = develop
+p4a.blacklist_requirements = pyjnius
 log_level = 2
 warn_on_root = 1
 
