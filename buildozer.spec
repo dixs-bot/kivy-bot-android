@@ -1,25 +1,38 @@
-[app]
-title = MPAPS Controller
-package.name = mpaps
-package.domain = org.mpaps
-source.dir = android
-source.include_exts = py,png,jpg,kv,atlas
-version = 1.0.0
-requirements = python3,kivy==2.3.0,websocket-client
-orientation = portrait
-fullscreen = 0
-android.permissions = INTERNET,READ_EXTERNAL_STORAGE
-android.api = 33
-android.minapi = 24
-android.accept_sdk_license = True
-android.arch = arm64-v8a
-android.bootstrap = sdl2
-p4a.branch = develop
-p4a.blacklist_requirements = pyjnius
-log_level = 2
-warn_on_root = 1
+name: Build Android APK
 
-[buildozer]
-log_level = 2
-warn_on_root = 1
-#bin_dir = ./bin
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev libltdl-dev
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Buildozer
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install buildozer cython==3.0.10
+
+      - name: Build APK
+        run: buildozer android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mpaps-apk
+          path: bin/*.apk
